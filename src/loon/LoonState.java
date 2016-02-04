@@ -3,6 +3,7 @@ package loon;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 
 public class LoonState
 {
@@ -201,6 +202,7 @@ public class LoonState
     }
     
     void evalBpositions(){
+    	/*
         int Bgrid[][]=new int[Loon.R][Loon.C];
         for(int r=0;r<Loon.R;++r){
             for(int c=0;c<Loon.C;++c)
@@ -219,11 +221,14 @@ public class LoonState
                 Bgrid[r][c]+=1;
             }
         }
-        
-        for(int l=0;l<Loon.L;++l){
-            int row=Loon.Lcells.get( l )[0];
-            int col=Loon.Lcells.get( l )[1];
-            boolean connected=false;
+        */
+        // check for connected Lcells
+    	int ballons[][] = new int[Loon.R][Loon.C];
+    	//HashMap<int[], Integer> LcellToBallon = new HashMap<int[], Integer>();
+        for(int b=0;b<Loon.B;++b){
+            int row=Bpos[b][0];
+            int col=Bpos[b][1];
+            //boolean connected=false;
             for(int checkV=0;checkV<Loon.delVvec.size();++checkV){
                 int delRow=Loon.delVvec.get( checkV )[0];
                 int delCol=Loon.delVvec.get( checkV )[1];
@@ -232,15 +237,32 @@ public class LoonState
                 if(curRow<0 || curRow>=Loon.R)
                     continue;
                 curCol=(curCol+Loon.C)%Loon.C;
-                if(Bgrid[curRow][curCol]<0){
-                    Bstrength[-Bgrid[curRow][curCol]-1]+=1;
-                    connected=true;
-                } else if(Bgrid[curRow][curCol]>0){
-                    connected=true;
+                if(Loon.Lgrid[curRow][curCol]==true){
+                    //Bstrength[-Bgrid[curRow][curCol]-1]+=1;
+                	if(ballons[curRow][curCol]!=0) {
+                	//int cur[] = {curRow, curCol};
+                	//if(LcellToBallon.get(cur)!=null) {
+                	//try {
+                		Bstrength[ballons[curRow][curCol]]-=1;
+                		//Bstrength[LcellToBallon.get(cur)]-=1;
+                		Loon.Lgrid[curRow][curCol]=false;
+                	}
+                	//catch (Exception e) {
+                	else {
+                		ballons[curRow][curCol] = b;
+                		//LcellToBallon.put(cur , b);
+                		Bstrength[b]+=1;
+                		++points;
+                	}
                 }
             }
+            /*
             if(connected)
-                ++points;
+                ++points;*/
+        }
+        //reset Lgrid
+        for(int l=0;l<Loon.Lcells.size();++l) {
+        	Loon.Lgrid[Loon.Lcells.get( l )[0]][Loon.Lcells.get( l )[1]] = true;
         }
     }
 }

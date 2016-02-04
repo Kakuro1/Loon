@@ -13,7 +13,7 @@ plt.close('all')
 
 filename="loon_r70_c300_a8_radius7_saturation_250.in"
 file=open(filename,'r')
-bmoves=open("result.out",'r')
+bmoves=open("Result.out",'r')
 
 rows,cols,alts=[int(s) for s in file.readline().split()]
 targets,radius,loons,ticks=[int(s) for s in file.readline().split()]
