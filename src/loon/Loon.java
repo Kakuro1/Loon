@@ -76,7 +76,8 @@ public class Loon
         LoonState currentMoves=new LoonState();
         for(int i=0;i<1000;i++){
             currentMoves.evaluate();
-            if(currentMoves.points/(double)T/L>0.5)
+        	System.out.printf("Loop %d\trelPoints %f%n", i, currentMoves.points/(double)T/L);
+            if(currentMoves.points/(double)T/L>0.55)
                 break;
             currentMoves.optimize();
             /*

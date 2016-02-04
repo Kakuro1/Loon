@@ -69,7 +69,7 @@ public class LoonState
     }
     
     void shortDump(){
-        System.out.println( (points/(double)Loon.T/Loon.L)+" "+getWeakestB() );
+        //System.out.println( (points/(double)Loon.T/Loon.L)+" "+getWeakestB() );
     }
     
     int getWeakestB(){
@@ -243,15 +243,15 @@ public class LoonState
                 	//int cur[] = {curRow, curCol};
                 	//if(LcellToBallon.get(cur)!=null) {
                 	//try {
-                		Bstrength[ballons[curRow][curCol]]-=1;
+                		Bstrength[ballons[curRow][curCol]-1]--;
                 		//Bstrength[LcellToBallon.get(cur)]-=1;
                 		Loon.Lgrid[curRow][curCol]=false;
                 	}
                 	//catch (Exception e) {
                 	else {
-                		ballons[curRow][curCol] = b;
+                		ballons[curRow][curCol] = b+1;
                 		//LcellToBallon.put(cur , b);
-                		Bstrength[b]+=1;
+                		Bstrength[b]++;
                 		++points;
                 	}
                 }
