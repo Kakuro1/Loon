@@ -3,9 +3,11 @@ package loon;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
-public class LoonState
+public class LoonState implements Comparable<LoonState>
 {
     int Bmoves[][];
     int Bstrength[];
@@ -24,7 +26,7 @@ public class LoonState
             Bstrength[b]=0;
             Bpos[b][0]=Loon.rs;
             Bpos[b][1]=Loon.cs;
-            Bpos[b][2]=-2;  //-2 not lifted, -1 chrased, 0 lowest alt level
+            Bpos[b][2]=-2;  //-2 not lifted, -1 crashed, 0 lowest alt level
         }
         ticksLived=0;
         points=0;
@@ -35,6 +37,13 @@ public class LoonState
             Bmoves[b][7*b]=1;
             */
         //end test initialization
+    }
+    
+    @Override
+    public int compareTo(LoonState other) {
+    	if(this.points > other.points) return 1;
+    	if(this.points < other.points) return -1;
+    	return 0;
     }
 
     void set(LoonState copy){
@@ -89,7 +98,7 @@ public class LoonState
         for(int b=0;b<Loon.B;++b){
             if(Bpos[b][0]==-1)
                 continue;
-            if(Bpos[b][2]==-2 && Bmoves[b][ticksLived]==1) //do liftof over crash state away
+            if(Bpos[b][2]==-2 && Bmoves[b][ticksLived]==1) //do liftoff over crash state away
                 Bpos[b][2]+=1;
             Bpos[b][2]+=Bmoves[b][ticksLived];
             if(Bpos[b][2]<-2 || Bpos[b][2]==-1 || Bpos[b][2]>=Loon.A){
@@ -153,35 +162,60 @@ public class LoonState
         }
         for(int t=3;t<Loon.T;++t){
             LoonState bestTest[]=new LoonState[9];
-            for(int i=0;i<9;++i)
+            for(int i=0;i<9;++i) {
                 bestTest[i]=new LoonState();
-            int weakestBestId=0;
-            for(int i=0;i<27;++i){
+        	}
+            Arrays.sort(test);
+            int weakestVal=test[18].points;
+            int lowerLimit=-1;
+            int upperLimit=0;
+            for(int i=0; i<27; i++) {
+            	if(test[i].points==weakestVal) {
+	            	if(lowerLimit==-1) {
+	            		lowerLimit = i;
+	            	}
+	            	upperLimit = i;
+            	}
+            }
+            for(int i=0; i<26-upperLimit; i++) {
+            	bestTest[8-i].set( test[26-i] );
+            }
+            ArrayList<Integer> cur = new ArrayList<Integer>();
+            for(int i=lowerLimit; i<=upperLimit; i++) {
+            	cur.add(i);
+            }
+            for(int i=0; i<upperLimit-17; i++) {
+            	int addIndex = Loon.randomGenerator.nextInt(cur.size());
+            	bestTest[i].set( test[cur.get(addIndex)] );
+            	cur.remove(addIndex);
+            }
+            /*
+            weakestBestId = Loon.randomGenerator.nextInt(9-weakestBestId)+weakestBestId;
+            for(int i=9;i<27;++i){
                 if(bestTest[weakestBestId].points<test[i].points){
                     bestTest[weakestBestId].set( test[i] );
-                    weakestBestId=0;
+                    //random improve
+                    int lowestWeakestBestId=0;
+                    //boolean weakestIds[] = new boolean[9];
                     for(int k=1;k<9;++k){
-                        if(bestTest[k].points<bestTest[weakestBestId].points){
-                            weakestBestId=k;
-                        } else if(bestTest[k].points==bestTest[weakestBestId].points){
-                            if(Loon.randomGenerator.nextBoolean())
-                                weakestBestId=k;
+                        if(bestTest[k].points<bestTest[lowestWeakestBestId].points){
+                            lowestWeakestBestId=k;
                         }
                     }
+                    weakestBestId = Loon.randomGenerator.nextInt(9-lowestWeakestBestId)+lowestWeakestBestId;
                 } else if(bestTest[weakestBestId].points==test[i].points){
                     if(Loon.randomGenerator.nextBoolean())
                         bestTest[weakestBestId].set( test[i] );
-                    weakestBestId=0;
+                    //random improve
+                    int lowestWeakestBestId=0;
                     for(int k=1;k<9;++k){
-                        if(bestTest[k].points<bestTest[weakestBestId].points){
-                            weakestBestId=k;
-                        } else if(bestTest[k].points==bestTest[weakestBestId].points){
-                            if(Loon.randomGenerator.nextBoolean())
-                                weakestBestId=k;
+                        if(bestTest[k].points<bestTest[lowestWeakestBestId].points){
+                            lowestWeakestBestId=k;
                         }
                     }
+                    weakestBestId = Loon.randomGenerator.nextInt(9-lowestWeakestBestId)+lowestWeakestBestId;
                 }
-            }
+            }*/
             bestTest[0].shortDump();
             for(int i=0;i<27;++i){
                 test[i].set( bestTest[i/3] );
@@ -226,6 +260,9 @@ public class LoonState
     	int ballons[][] = new int[Loon.R][Loon.C];
     	//HashMap<int[], Integer> LcellToBallon = new HashMap<int[], Integer>();
         for(int b=0;b<Loon.B;++b){
+        	if(Bpos[b][2]==-2) {
+        		continue;
+        	}
             int row=Bpos[b][0];
             int col=Bpos[b][1];
             //boolean connected=false;
